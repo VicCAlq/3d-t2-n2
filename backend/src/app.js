@@ -28,7 +28,9 @@ const db = new sql.Database(
 
 db.run(
   `CREATE TABLE IF NOT EXISTS ${TABELA_FONTES_NOME} (
-    id INTEGER PRIMARY KEY AUTOINCREMENT
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_fonte TEXT NOT NULL,
+    endereco TEXT NOT NULL
   )`,
   (erro) => {
     if (erro) {
@@ -41,7 +43,11 @@ db.run(
 
 db.run(
   `CREATE TABLE IF NOT EXISTS ${TABELA_NOTICIAS_NOME} (
-    id INTEGER PRIMARY KEY AUTOINCREMENT
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_noticia TEXT NOT NULL,
+    endereco_noticia TEXT NOT NULL,
+    descricao TEXT NOT NULL,
+    categoria TEXT NOT NULL
   )`,
   (erro) => {
     if (erro) {

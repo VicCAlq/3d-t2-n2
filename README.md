@@ -17,7 +17,7 @@ A pasta `docs` contém arquivos no formato markdown (igual a este) para consulta
 
 Bom dia gente, hoje começaremos a N2 no endereço abaixo:
 
-https://github.com/VicCAlq/3x-t2-n2
+https://github.com/VicCAlq/3d-t2-n2
 
 A N2 será para as disciplinas Mobile e Backend. Vocês trabalharão com os grupos de PI (sem o pessoal de design). Cada grupo tem sua própria branch.
 

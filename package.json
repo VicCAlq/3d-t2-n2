@@ -1,0 +1,14 @@
+{
+  "name": "Atividade",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "front": "cd frontend && npm run web",
+    "back": "cd backend && npm run dev",
+    "install": "cd frontend && npm install & cd ../backend && npm install",
+    "lrun": "(cd frontend && npm run web) & (cd backend && npm run dev) && fg",
+    "linstall": "(cd frontend && npm install) & (cd backend && npm install) && fg",
+    "test": "vitest run .",
+    "test-json": "timeout --signal=SIGKILL 60s npx vitest run --reporter=json --output-file=./resultado.json --pool=forks --testTimeout=60000 || true"
+  }
+}

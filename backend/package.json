@@ -1,0 +1,26 @@
+{
+  "name": "Atividade",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node ./src/app.js",
+    "dev": "nodemon ./src/app.js",
+    "vite": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run .",
+    "test-json": "timeout --signal=SIGKILL 60s npx vitest run --reporter=json --output-file=./resultado.json --pool=forks --testTimeout=60000 || true"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "supertest": "^7.2.2",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.21",
+    "express": "^5.2.1",
+    "sqlite3": "^6.0.1"
+  }
+}

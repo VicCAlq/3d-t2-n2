@@ -4,23 +4,43 @@ import Exemplo from './components/Exemplo';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <Text>Comece aqui seu projeto Mobile</Text>
-        <Exemplo>Este é um componente de exemplo</Exemplo>
-      </ScrollView>
+    <View style={styles.principal}>
+
+      <View style={styles.wanda}>
+
+        <ScrollView> 
+
+          <Text>Categoria  <strong>v</strong></Text>
+
+        </ScrollView>
+
+        <View>
+
+          <Text> Fonte <strong>v</strong></Text>
+
+        </View>
+      
+      </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  principal: {
     flex: 1,
     backgroundColor: "#eec",
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
   },
-  title: {
-    color: "#101015"
+
+  wanda: {
+    backgroundColor: "rgba(235, 235, 9, 1)",
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
   }
+
 });
+

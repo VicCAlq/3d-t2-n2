@@ -7,7 +7,8 @@ const {
   DB_NOME,
   TABELA_FONTES_NOME,
   TABELA_NOTICIAS_NOME
-} = require('./env.js')
+} = require('./env.js');
+const { baixarFeedRSS } = require('./feedRSS.js');
 
 const app = express()
 app.use(express.urlencoded({ extended: true }))
@@ -72,12 +73,29 @@ app.get('/api/noticias/categoria/:categoria', (req, res) => {
 })
 
 app.get('/api/fontes/cadastrar', (req, res) => {
+
   if (!req.query) {
     res.status(400).json({ error: erro.message });
     return
+  } else if (typeof(req.query.link) !== 'string') {
+    res.status(400).json({ error: `Propriedade "link" não é uma string válida` });
+  } else {
+    let url
+    try {
+      url = new URL(req.query.link)
+    } catch(err) {
+      res.status(400).json({ error: `O texto enviado não se trata de um endereço Web` });
+    }
   }
 
-  const { nome, endereco } = req.query
+  const { link } = req.query
+
+  async function pegarFeed(link) {
+    await baixarFeedRSS(link)
+    .then((resposta) => {
+      // destrinchar resposta pra enviar pro banco de dados
+    })
+  }
 })
 
 app.listen(porta, () => {

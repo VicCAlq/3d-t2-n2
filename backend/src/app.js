@@ -2,7 +2,7 @@ const express = require('express')
 const path = require('path')
 const cors = require('cors');
 const sql = require('sqlite3').verbose()
-const { 
+const {
   porta,
   DB_NOME,
   TABELA_FONTES_NOME,
@@ -28,7 +28,9 @@ const db = new sql.Database(
 
 db.run(
   `CREATE TABLE IF NOT EXISTS ${TABELA_FONTES_NOME} (
-    id INTEGER PRIMARY KEY AUTOINCREMENT
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT,
+    endereco TEXT
   )`,
   (erro) => {
     if (erro) {
@@ -41,7 +43,13 @@ db.run(
 
 db.run(
   `CREATE TABLE IF NOT EXISTS ${TABELA_NOTICIAS_NOME} (
-    id INTEGER PRIMARY KEY AUTOINCREMENT
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    titulo TEXT,
+    link TEXT,
+    categoria TEXT,
+    data_publicacao TEXT,
+    fonte_id INTEGER,
+    FOREIGN KEY (fonte_id) REFERENCES ${TABELA_FONTES_NOME}(id)
   )`,
   (erro) => {
     if (erro) {
@@ -60,19 +68,41 @@ app.get('/', (req, res) => {
   })
 })
 
+app.get('/api/fontes/cadastrar', (req, res) => {
+  const { nome, endereco } = req.query
+
+  if (!nome || !endereco) {
+    return res.status(400).json({ error: 'nome e endereco são obrigatórios' })
+  }
+
+  db.run(
+    `INSERT INTO ${TABELA_FONTES_NOME} (nome, endereco) VALUES (?, ?)`,
+    [nome, endereco],
+    function (erro) {
+      if (erro) {
+        return res.status(500).json({ error: erro.message })
+      }
+      res.status(201).json({ id: this.lastID, nome, endereco })
+    
+    }
+  )
+})
 
 app.get('/api/noticias/categoria/:categoria', (req, res) => {
   const categoria = req.params.categoria
+
+  db.all(
+    `SELECT * FROM ${TABELA_NOTICIAS_NOME} WHERE categoria = ?`,
+    [categoria],
+    (erro, linhas) => {
+      if (erro) {
+        return res.status(500).json({ error: erro.message })
+      }
+      res.status(200).json(linhas)
+    }
+  )
 })
 
-app.get('/api/fontes/cadastrar', (req, res) => {
-  if (!req.query) {
-    res.status(400).json({ error: erro.message });
-    return
-  }
-
-  const { nome, endereco } = req.query
-})
 
 app.listen(porta, () => {
   console.log(`Servidor rodando em http://localhost:${porta}`)

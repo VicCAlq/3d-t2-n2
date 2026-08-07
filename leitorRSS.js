@@ -1,10 +1,15 @@
-const PROXY = 'https://corsproxy.io/?url='
+const CORS_PROXIES = [
+  'https://api.allorigins.win/raw?url=',
+  'https://corsproxy.io/?',
+  'thingproxy.freeboard.io/fetch/',
+];
 
 async function fetchComProxy(endereco) {
   let erroMaisRecente = null;
 
+  for (const proxy of CORS_PROXIES) {
     try {
-      const proxyEndereco = PROXY + encodeURIComponent(endereco);
+      const proxyEndereco = proxy + encodeURIComponent(endereco);
       const resposta = await fetch(proxyEndereco, {
         headers: {
           'Accept': 'application/rss+xml, application/xml, text/xml, */*',
@@ -21,6 +26,7 @@ async function fetchComProxy(endereco) {
     } catch (err) {
       erroMaisRecente = err;
     }
+  }
 
   throw erroMaisRecente || new Error('Não foi possível carregar o feed. Verifique a Endereco e tente novamente.');
 }
@@ -31,7 +37,7 @@ function lerRSS(textoXML) {
 
   const parseErro = doc.querySelector('parsererror');
   if (parseErro) {
-    throw new Erro('XML inválido: não foi possível parsear o feed.');
+    throw new Error('XML inválido: não foi possível parsear o feed.');
   }
 
   const formatoAtom = doc.documentElement.nodeName === 'feed';
@@ -80,7 +86,7 @@ function lerRSS(textoXML) {
       return {
         titulo: item.querySelector('title')?.textContent || 'Sem título',
         link: item.querySelector('link')?.textContent || '',
-        descricao: descricaoFormatada.substring(0, 500),
+        descricao: descricaoFormatada.substring(0, 500) + "...",
         dataPublicacao: item.querySelector('pubDate')?.textContent || item.querySelector('dc\\:date, date')?.textContent || new Date().toISOString(),
         categorias: Array.from(item.querySelectorAll('category')).map(c => c.textContent).filter(Boolean),
       };
@@ -88,14 +94,18 @@ function lerRSS(textoXML) {
   }
 
   return {
-    titulo: title || 'Sem título',
-    descricao: description || '',
-    link: link || '',
+    fonte: {
+      titulo: titulo || 'Sem título',
+      descricao: descricao || '',
+      link: link || '',
+    },
     noticias: noticias.slice(0, 50),
   };
 }
 
-export async function baixarFeedRSS(url) {
+async function baixarFeedRSS(url) {
   const textoXML = await fetchComProxy(url);
   return lerRSS(textoXML);
 }
+
+module.exports = { baixarFeedRSS };

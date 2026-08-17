@@ -238,6 +238,51 @@ app.delete("/api/noticias/deletar/noticia/:id", (req, res) => {
   );
 });
 
+app.get("/api/categorias/:categoria", (req, res) => {
+  const categoria = req.params.categoria;
+
+  db.all(
+    `SELECT * FROM categorias WHERE nome = ?`,
+    [categoria],
+    (erro, categorias) => {
+      if (erro) {
+        res.status(400).json({
+          error: erro.message,
+        });
+      } else {
+        res.status(200).json({
+          message: "categorias filtradas com sucesso",
+          data: categorias,
+        });
+      }
+    }
+  );
+});
+
+app.delete("/api/categorias/:id", (req, res) => {
+  const id = req.params.id;
+
+  db.run(
+    `DELETE FROM categorias WHERE id = ?`,
+    [id],
+    function (erro) {
+      if (erro) {
+        res.status(400).json({
+          error: erro.message,
+        });
+      } else {
+        res.status(200).json({
+          message: "categoria deletada com sucesso",
+          data: {
+            id: id,
+            alteracoes: this.changes,
+          },
+        });
+      }
+    }
+  );
+});
+
 app.listen(porta, () => {
   console.log(`Servidor rodando em http://localhost:${porta}`)
 })

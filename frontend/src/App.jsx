@@ -1,7 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState,  useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, TextInput, Alert} from 'react-native';
-import Exemplo from './components/Exemplo';
+import { StyleSheet, Text, View, Pressable, TextInput} from 'react-native';
 
 export default function App() {
 
@@ -19,10 +18,9 @@ export default function App() {
     "economia"
   ];
 
-  const rota = "http://localhost:3000/api";
 
   async function cadastrarFeed(url) {
-    const query = new URLSearchParams('link', url)
+    const query = new URLSearchParams({link: url})
     await fetch(`http://localhost:3000/api/fontes/cadastrar?${query}`)
     .then((resposta) => {
       if (!resposta.ok) {
@@ -48,7 +46,7 @@ export default function App() {
   }
 
   async function carregarNoticias(fonte) {
-    const rota = "http://localhost:3000/api/noticias"
+    let rota = "http://localhost:3000/api/noticias"
     if (fonte) {
       rota = rota + "/fonte/" + fonte
     }
@@ -75,7 +73,7 @@ export default function App() {
   }
 
   async function filtrarPorFonte(nomeFonte) {
-    const rota = "http://localhost:3000/api/noticias/fonte"
+    const rota = "http://localhost:3000/api/noticias/fonte" + nomeFonte
 
     await fetch(rota)
     .then((resposta) => {
@@ -102,7 +100,7 @@ export default function App() {
   }
 
 async function filtrarPorCategoria(nomeCategoria) {
-    const rota = "http://localhost:3000/api/noticias/categoria"
+    const rota = "http://localhost:3000/api/noticias/categoria" + nomeCategoria
 
     await fetch(rota)
     .then((resposta) => {
@@ -199,9 +197,8 @@ async function filtrarPorCategoria(nomeCategoria) {
           <TextInput style={styles.input} value={fonte} onChangeText={setFonte}/>
 
 
-          <Pressable
-            style={styles.botaoPesquisar}
-            onPress={filtrarPorFonte}
+          <Pressable style={styles.botaoPesquisar}
+           onPress={() => filtrarPorFonte(fonte)}
           >
 
             <Text style={styles.textoBotao}>
@@ -216,7 +213,7 @@ async function filtrarPorCategoria(nomeCategoria) {
 
 
 <View style={styles.lista}>
-         tabelaNoticias.map((noticia) => (
+         {tabelaNoticias.map((noticia) => (
 
             <View key={noticia.id} style={styles.noticia}>
 
@@ -239,7 +236,7 @@ async function filtrarPorCategoria(nomeCategoria) {
                 Categoria: {noticia.categoria}
               </Text>
 
-              </View>))
+              </View>))}
 
 </View>
 
@@ -289,7 +286,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  filtros: {
+  topoFiltros: {
     width: "100%",
     padding: 10,
     backgroundColor: "yellow",
@@ -316,5 +313,15 @@ const styles = StyleSheet.create({
 
     color: "white",
     fontSize: 15
+  },
+
+input: {
+  borderWidth: 1,
+  borderColor: "#999",
+  borderRadius: 8,
+  paddingHorizontal: 12,
+  paddingVertical: 10,
+  marginBottom: 10,
+}
 
 });

@@ -168,10 +168,16 @@ app.get('/api/fontes/cadastrar', async (req, res) => {
   }
 })
 
-app.get("/api/fontes/filtrarFontes", (req, res) => {
+app.get("/api/fontes/:fonte", (req, res) => {
+  if (typeof(req.query.fonte) !== 'string') {
+    console.log("fonte em branco")
+    return res.status(400).json({ error: 'Propriedade "fonte" não é uma string válida' });
+  }
+
+  const fonte = req.query.fonte
   db.all(
     `SELECT * FROM ${TABELA_NOTICIAS_NOME} WHERE link = ?`,
-    [req.query.endereco],
+    [fonte],
     (erro, fontes) => {
       if (erro) {
         res.status(400).json({ error: erro.message });
@@ -185,6 +191,7 @@ app.get("/api/fontes/filtrarFontes", (req, res) => {
     },
   );
 });
+
 app.get('/api/noticias/categoria/:categoria', async (req, res) => {
   const categoria = req.params.categoria
   try {
@@ -199,7 +206,7 @@ app.get('/api/noticias/categoria/:categoria', async (req, res) => {
 })
 
 app.delete("/api/fontes/deletar/fonte/:id", (req, res) => {
-  const id = req.params.id;
+  const id = req.query.id;
   db.run(
     `DELETE FROM ${TABELA_FONTES_NOME} WHERE id = ?`,
     [id],

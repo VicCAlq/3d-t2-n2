@@ -70,10 +70,67 @@ app.get('/', (req, res) => {
 })
 
 
-app.get('/api/noticias/categoria/:categoria', (req, res) => {
+// Filtra a tabela de notícias pela categoria
+app.get('/api/noticias/categoria/:categoria', async (req, res) => {
   const categoria = req.params.categoria
+  try {
+    const linhas = await buscar(
+      `SELECT * FROM ${TABELA_NOTICIAS_NOME} WHERE ',' || categorias || ',' LIKE '%,' || ? || ',%'`,
+      [categoria]
+    )
+    res.json({ noticias: linhas })
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message })
+  }
 })
 
+// Envia lista de fontes de notícias
+app.get('/api/fontes/', async (req, res) => {
+  try {
+    const fontes = await buscar(`SELECT * FROM ${TABELA_FONTES_NOME}`)
+    res.json({ fontes })
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message })
+  }
+})
+
+// Envia lista de categorias de notícias
+app.get('/api/categorias/', async (req, res) => {
+  try {
+    const linhas = await buscar(
+      `SELECT DISTINCT categorias FROM ${TABELA_NOTICIAS_NOME} WHERE categorias IS NOT NULL AND categorias != ''`
+    )
+    const categorias = [...new Set(
+      linhas
+        .flatMap(l => String(l.categorias).split(','))
+        .map(c => c.trim())
+        .filter(Boolean)
+    )]
+    res.json({ categorias })
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message })
+  }
+})
+
+// Apaga uma notícia pelo id
+app.delete('/api/noticias/:id', async (req, res) => {
+  const id = Number(req.params.id)
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ erro: 'Id inválido' })
+  }
+  try {
+    const resultado = await executar(
+      `DELETE FROM ${TABELA_NOTICIAS_NOME} WHERE id = ?`,
+      [id]
+    )
+    if (resultado.changes === 0) {
+      return res.status(404).json({ erro: 'Notícia não encontrada' })
+    }
+    res.json({ mensagem: 'Notícia apagada com sucesso', apagado: resultado.changes })
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message })
+  }
+})
 app.get('/api/fontes/cadastrar', async (req, res) => {
 
   if (typeof(req.query.link) !== 'string') {
@@ -168,7 +225,7 @@ function buscar(sql, params = []) {
       if (erro) { reject(erro) }
       else { resolve(linhas) }
     })
-  })/
+  })
 }
 
 app.listen(porta, () => {

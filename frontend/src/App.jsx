@@ -56,12 +56,10 @@ export default function App() {
       }
       return resposta.json()
     })
-    .then((resultado) => {
-
-        setTabelaNoticias(resultado);
-        setErro("");
-
-    })
+   .then((resultado) => {
+    setTabelaNoticias(resultado.noticias);
+    setErro("");
+})
     .catch((erro) => {
               console.log(erro);
 
@@ -225,7 +223,7 @@ async function filtrarPorCategoria(nomeCategoria) {
             <View key={noticia.id} style={styles.noticia}>
 
               <Text style={styles.tituloNoticia}>
-                {noticia.titulo}
+                {noticia.nome_noticia}
               </Text>
 
 
@@ -240,7 +238,7 @@ async function filtrarPorCategoria(nomeCategoria) {
 
 
               <Text style={styles.informacao}>
-                Categoria: {noticia.categoria}
+                Categoria: {noticia.categorias}
               </Text>
 
               </View>))}

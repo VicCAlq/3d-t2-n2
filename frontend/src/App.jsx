@@ -11,8 +11,7 @@ export default function App() {
   const [filtro, setFiltro] = useState("");
   const [erro, setErro] = useState("");
 
-    const categorias = [
-    "politica",
+    const categorias = [ "politica",
     "esportes",
     "tecnologia",
     "economia"
@@ -73,7 +72,7 @@ export default function App() {
   }
 
   async function filtrarPorFonte(nomeFonte) {
-    const rota = "http://localhost:3000/api/noticias/fonte" + nomeFonte
+    const rota = "http://localhost:3000/api/noticias/fonte" + nomeFonte;
 
     await fetch(rota)
     .then((resposta) => {
@@ -100,7 +99,7 @@ export default function App() {
   }
 
 async function filtrarPorCategoria(nomeCategoria) {
-    const rota = "http://localhost:3000/api/noticias/categoria" + nomeCategoria
+    const rota = "http://localhost:3000/api/noticias/categoria" + nomeCategoria;
 
     await fetch(rota)
     .then((resposta) => {
@@ -134,26 +133,35 @@ async function filtrarPorCategoria(nomeCategoria) {
   return (
     <View style={styles.principal}>
 
-      <View style={styles.topo}></View>
-           
-      <View style={styles.formulario}>
+      <View style={styles.topo}>
+  <Text style={styles.titulo}>
+    Site foda
+  </Text>
+</View>
 
-        <Text style={styles.subtitulo}>
-          Cadastrar nova fonte
-        </Text>
+<View style={styles.formulario}>
 
-        <TextInput style={styles.input}
-          value={endereco}
-          onChangeText={setEndereco}
-        />
+  <Text style={styles.subtitulo}>
+    Cadastrar nova fonte
+  </Text>
 
-        <Pressable style={styles.botaoCadastrar} onPress={() => cadastrarFeed(endereco)}>
-          <Text style={styles.textoBotao}>
-            Cadastrar fonte
-          </Text>
-        </Pressable>
+  <TextInput
+    style={styles.input}
+    value={endereco}
+    onChangeText={setEndereco}
+    placeholder="Digite o link da fonte"
+  />
 
-      </View>
+  <Pressable
+    style={styles.botaoCadastrar}
+    onPress={() => cadastrarFeed(endereco)}
+  >
+    <Text style={styles.textoBotao}>
+      Cadastrar fonte
+    </Text>
+  </Pressable>
+
+</View>
      
       <View style={styles.topoFiltros}>
           <Pressable style={styles.botao}
@@ -198,8 +206,7 @@ async function filtrarPorCategoria(nomeCategoria) {
 
 
           <Pressable style={styles.botaoPesquisar}
-           onPress={() => filtrarPorFonte(fonte)}
-          >
+           onPress={() => filtrarPorFonte(fonte)}>
 
             <Text style={styles.textoBotao}>
               Pesquisar
@@ -322,6 +329,51 @@ input: {
   paddingHorizontal: 12,
   paddingVertical: 10,
   marginBottom: 10,
+},
+
+menuFiltro: {
+  backgroundColor: "white",
+  padding: 15,
+},
+
+opcao: {
+  padding: 10,
+  borderBottomWidth: 1,
+  borderBottomColor: "#ccc",
+},
+
+botaoPesquisar: {
+  paddingVertical: 10,
+  borderRadius: 8,
+  backgroundColor: "#2f00ff",
+  alignItems: "center",
+},
+
+lista: {
+  padding: 15,
+},
+
+noticia: {
+  backgroundColor: "white",
+  padding: 15,
+  marginBottom: 10,
+  borderRadius: 8,
+},
+
+tituloNoticia: {
+  fontSize: 18,
+  fontWeight: "bold",
+  marginBottom: 5,
+},
+
+descricao: {
+  fontSize: 14,
+  marginBottom: 8,
+},
+
+informacao: {
+  fontSize: 13,
+  marginTop: 3,
 }
 
 });

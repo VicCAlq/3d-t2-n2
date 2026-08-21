@@ -8,7 +8,7 @@ const {
   TABELA_FONTES_NOME,
   TABELA_NOTICIAS_NOME
 } = require('./env.js');
-const { baixarFeedRSS } = require('./feedRSS.js');
+const { baixarFeedRSS } = require('./leitorRSS.js');
 
 const app = express()
 app.use(express.urlencoded({ extended: true }))
@@ -30,8 +30,9 @@ const db = new sql.Database(
 db.run(
   `CREATE TABLE IF NOT EXISTS ${TABELA_FONTES_NOME} (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome_fonte TEXT NOT NULL,
-    endereco TEXT NOT NULL
+    titulo TEXT NOT NULL,
+    link TEXT NOT NULL,
+    descricao TEXT
   )`,
   (erro) => {
     if (erro) {
@@ -40,7 +41,7 @@ db.run(
       console.log(`Tabela "${TABELA_FONTES_NOME}" pronta!`);
     }
   }
-)
+);
 
 db.run(
   `CREATE TABLE IF NOT EXISTS ${TABELA_NOTICIAS_NOME} (
@@ -49,8 +50,8 @@ db.run(
     fonte TEXT,
     endereco_noticia TEXT NOT NULL,
     descricao TEXT NOT NULL,
-    categoria TEXT NOT NULL,
-    dataDePublicação TEXT NOT NULL
+    categorias TEXT NOT NULL,
+    dataDePublicacao TEXT NOT NULL
   )`,
   (erro) => {
     if (erro) {
@@ -59,7 +60,7 @@ db.run(
       console.log(`Tabela "${TABELA_NOTICIAS_NOME}" pronta!`);
     }
   }
-)
+);
 
 app.get('/', (req, res) => {
   res.status(200).json({
@@ -153,8 +154,8 @@ app.get('/api/fontes/cadastrar', async (req, res) => {
     let colunaChave = 'link'
     let chave = valores[indiceLink]
     if (chave === null) {
-      const indiceTitulo = colunas.indexOf('titulo')
-      colunaChave = 'titulo'
+    const indiceTitulo = colunas.indexOf('nome_noticia')
+    colunaChave = 'nome_noticia'
       chave = valores[indiceTitulo]
     }
 
@@ -227,6 +228,23 @@ function buscar(sql, params = []) {
     })
   })
 }
+
+app.get('/api/noticias', async (req, res) => {
+  try {
+    const noticias = await buscar(
+      `SELECT * FROM ${TABELA_NOTICIAS_NOME}`
+    );
+
+    res.json(noticias);
+
+  } catch (erro) {
+    console.error("Erro ao buscar notícias:", erro);
+
+    res.status(500).json({
+      erro: erro.message
+    });
+  }
+});
 
 app.listen(porta, () => {
   console.log(`Servidor rodando em http://localhost:${porta}`)

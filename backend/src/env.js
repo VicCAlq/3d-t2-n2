@@ -1,4 +1,4 @@
-const porta = 3451
+const porta = 3000
 const DB_NOME = "agregador.db"
 const TABELA_NOTICIAS_NOME = "noticias"
 const TABELA_FONTES_NOME = "fontes"

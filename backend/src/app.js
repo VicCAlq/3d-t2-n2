@@ -70,8 +70,6 @@ app.get('/', (req, res) => {
   })
 })
 
-
-// Filtra a tabela de notícias pela categoria
 app.get('/api/noticias/categoria/:categoria', async (req, res) => {
   const categoria = req.params.categoria
   try {
@@ -80,6 +78,23 @@ app.get('/api/noticias/categoria/:categoria', async (req, res) => {
       [categoria]
     )
     res.json({ noticias: linhas })
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message })
+  }
+})
+
+// Filtra a tabela de notícias pela fonte
+app.get('/api/noticias/fonte/:fonte', async (req, res) => {
+  const fonte = req.params.fonte
+
+  try {
+    const linhas = await buscar(
+      `SELECT * FROM ${TABELA_NOTICIAS_NOME} WHERE fonte = ?`,
+      [fonte]
+    )
+
+    res.json(linhas)
+
   } catch (erro) {
     res.status(500).json({ erro: erro.message })
   }
@@ -113,7 +128,6 @@ app.get('/api/categorias/', async (req, res) => {
   }
 })
 
-// Apaga uma notícia pelo id
 app.delete('/api/noticias/:id', async (req, res) => {
   const id = Number(req.params.id)
   if (!Number.isInteger(id)) {
@@ -132,6 +146,26 @@ app.delete('/api/noticias/:id', async (req, res) => {
     res.status(500).json({ erro: erro.message })
   }
 })
+
+app.delete('/api/fontes/:id', async (req, res) => {
+  const id = Number(req.params.id)
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ erro: 'Id inválido'})
+  }
+  try {
+    const resultado = await executar(
+      `DELETE FROM ${TABELA_FONTES_NOME} WHERE id = ?`,
+      [id]
+    )
+    if (resultado.changes === 0) {
+      return res.status(404).json({erro: 'Fonte não encontrada' })
+    }
+    res.json({ mensagem: 'Fonte apagada com sucesso', apagado: resultado.changes})
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message})
+  }
+})
+
 app.get('/api/fontes/cadastrar', async (req, res) => {
 
   if (typeof(req.query.link) !== 'string') {
@@ -245,6 +279,7 @@ app.get('/api/noticias', async (req, res) => {
     });
   }
 });
+
 
 app.listen(porta, () => {
   console.log(`Servidor rodando em http://localhost:${porta}`)

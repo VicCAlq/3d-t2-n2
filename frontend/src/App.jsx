@@ -10,6 +10,7 @@ import {
   Image,
   ActivityIndicator,
   Modal,
+  Linking,
   Platform,
 } from 'react-native';
 
@@ -171,6 +172,15 @@ export default function App() {
     setLoading(false);
   };
 
+  const abrirNoticia = async (url) => {
+    if (!url) return;
+    try {
+      await Linking.openURL(url);
+    } catch (e) {
+      console.log("Erro ao abrir notícia:", e);
+    }
+  };
+
   useEffect(() => {
     buscarNoticias();
     buscarCategorias();
@@ -268,7 +278,12 @@ export default function App() {
         )}
 
         {noticias.map(n => (
-          <TouchableOpacity key={n.id} style={s.card} activeOpacity={0.8}>
+          <TouchableOpacity
+            key={n.id}
+            style={s.card}
+            activeOpacity={0.8}
+            onPress={() => abrirNoticia(n.url)}
+          >
             {n.image ? (
               <Image source={{ uri: n.image }} style={s.cardImagem} />
             ) : null}

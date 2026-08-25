@@ -2,6 +2,8 @@ const express = require('express')
 const path = require('path')
 const cors = require('cors');
 const sql = require('sqlite3').verbose()
+const fontesRoutes = require('./routes/fontes');
+const noticiasRoutes = require('./routes/noticias');
 const { 
   porta,
   DB_NOME,
@@ -28,6 +30,8 @@ const db = new sql.Database(
 
 db.run(
   `CREATE TABLE IF NOT EXISTS ${TABELA_FONTES_NOME} (
+    name VARCHAR(50) UNIQUE,
+    url TEXT UNIQUE,
     id INTEGER PRIMARY KEY AUTOINCREMENT
   )`,
   (erro) => {
@@ -41,8 +45,15 @@ db.run(
 
 db.run(
   `CREATE TABLE IF NOT EXISTS ${TABELA_NOTICIAS_NOME} (
+    titulo TEXT NOT NULL,
+    url TEXT NOT NULL,
+    description TEXT NOT NULL,
+    data_publicacao TEXT,
+    image TEXT,
+    categoria TEXT,
+    fk_fonte_id INTEGER REFERENCES ${TABELA_FONTES_NOME}(id),
     id INTEGER PRIMARY KEY AUTOINCREMENT
-  )`,
+)`,
   (erro) => {
     if (erro) {
       console.error(`Erro ao criar a tabela "${TABELA_NOTICIAS_NOME}"`, erro.message);
@@ -61,6 +72,7 @@ app.get('/', (req, res) => {
 })
 
 
+
 app.get('/api/noticias/categoria/:categoria', (req, res) => {
   const categoria = req.params.categoria
 })
@@ -77,3 +89,7 @@ app.get('/api/fontes/cadastrar', (req, res) => {
 app.listen(porta, () => {
   console.log(`Servidor rodando em http://localhost:${porta}`)
 })
+
+app.use("/fontes", fontesRoutes)
+app.use("/noticias", noticiasRoutes)
+

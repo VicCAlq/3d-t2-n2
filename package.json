@@ -10,5 +10,8 @@
     "linstall": "(cd frontend && npm install) & (cd backend && npm install) && fg",
     "test": "vitest run .",
     "test-json": "timeout --signal=SIGKILL 60s npx vitest run --reporter=json --output-file=./resultado.json --pool=forks --testTimeout=60000 || true"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.11.0"
   }
 }

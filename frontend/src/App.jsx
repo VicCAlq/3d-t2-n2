@@ -48,8 +48,6 @@ export default function App() {
       })
       .then((resultado) => {
         setNoticias(resultado)
-        // como o backend não tem uma rota própria de categorias,
-        // a gente monta a lista a partir das notícias que já vieram
         const conjunto = new Set()
         resultado.forEach((n) => {
           (n.categorias || '').split(',').map((c) => c.trim()).filter(Boolean).forEach((c) => conjunto.add(c))

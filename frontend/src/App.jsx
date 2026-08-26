@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Linking } from 'react-native';
 
 
-const API_URL = 'http://localhost:8081';
+const API_URL = 'http://localhost:3451';
 
 
 export default function App() {
@@ -18,19 +18,19 @@ export default function App() {
 
 
   
-  // CARREGAR FONTES
+  //CARREGAR FONTES
 
   async function carregarFontes() {
 
     try {
 
       const resposta = await fetch(
-        `${API_URL}/api/fontes`
+        `${API_URL}/api/fontes/`
       );
 
       const dados = await resposta.json();
 
-      setFontes(dados);
+      setFontes(dados.fontes);
 
     } catch (erro) {
 
@@ -44,7 +44,7 @@ export default function App() {
   }
 
 
-  // CARREGAR NOTÍCIAS
+  //CARREGAR NOTÍCIAS
 
   async function carregarNoticias() {
 
@@ -67,17 +67,17 @@ export default function App() {
 
         url =
           `${API_URL}/api/noticias/fonte/` +
-          fonteSelecionada;
+          encodeURIComponent(
+            fonteSelecionada
+          );
+          
 
       }
 
 
       const resposta = await fetch(url);
-
       const dados = await resposta.json();
-
       setNoticias(dados);
-
     } catch (erro) {
 
       console.error(
@@ -94,14 +94,14 @@ export default function App() {
   }
 
 
-  // CADASTRAR FONTE
+  //CADASTRAR FONTE
 
   async function cadastrarFonte() {
 
-    if (!nomeFonte || !enderecoFonte) {
+    if (!enderecoFonte) {
 
       alert(
-        'Preencha o nome e o endereço da fonte.'
+        'Preencha o link da fonte.'
       );
 
       return;
@@ -111,31 +111,21 @@ export default function App() {
 
     try {
 
+      const query = new URLSearchParams({
+        link: enderecoFonte,
+      });
+
       const resposta = await fetch(
-        `${API_URL}/api/fontes`,
-        {
-          method: 'POST',
-
-          headers: {
-            'Content-Type': 'application/json',
-          },
-
-          body: JSON.stringify({
-            nome: nomeFonte,
-            endereco: enderecoFonte,
-          }),
-
-        }
-      );
-
-
-      const dados = await resposta.json();
+        `${API_URL}/api/fontes/cadastrar?${query}`,
+      )
+       const dados = await resposta.json();
 
 
       if (!resposta.ok) {
 
         alert(
-          dados.message ||
+          dados.error ||
+          dados.erro ||
           'Erro ao cadastrar fonte.'
         );
 
@@ -153,8 +143,8 @@ export default function App() {
       setEnderecoFonte('');
 
 
-      await carregarFontes();
 
+      await carregarFontes();
       await carregarNoticias();
 
 
@@ -173,8 +163,39 @@ export default function App() {
 
   }
 
+ //DELETAR FONTES
 
-  // CARREGAMENTO INICIAL
+  async function apagarFonte(id) {
+
+    try {
+
+      const resposta = await fetch(
+        `${API_URL}/api/fontes/${id}`,
+        { method: 'DELETE' }
+      ); 
+      
+      const dados = await resposta.json();
+  
+      if (!resposta.ok) {
+        alert(dados.erro || 'Erro ao apagar fonte.');
+        return;
+      } 
+      
+      if (fonteSelecionada) {
+        setFonteSelecionada('');
+      }
+
+      await carregarFontes();
+      await carregarNoticias();
+
+    }catch (erro) {
+      
+      console.error(
+        'Erro ao apagar fonte:', erro);
+      alert('Não foi possível conectar ao servidor.');      
+    }
+  }
+  //CARREGAMENTO
 
   useEffect(() => {
 
@@ -184,7 +205,7 @@ export default function App() {
   }, []);
 
 
-  // ATUALIZAR NOTÍCIAS QUANDO O FILTRO MUDAR
+  //ATUALIZAR NOTÍCIAS QUANDO O FILTRO MUDAR
 
   useEffect(() => {
 
@@ -196,19 +217,18 @@ export default function App() {
   ]);
 
 
-  // CATEGORIAS
+  //CATEGORIAS
 
   const categorias = [
 
-    'Política',
-    'Economia',
     'Esportes',
     'Tecnologia',
     'Ciência',
     'Saúde',
     'Cultura',
-    'Mundo',
-
+    'Política',                                                           
+    'Economia',
+    'Mundo'
   ];
 
 
@@ -218,13 +238,11 @@ export default function App() {
 
       <View style={styles.container}>
 
-
         {/*TÍTULO*/}
 
         <Text style={styles.titulo}>
           T3 Notícias
         </Text>
-
 
         {/* CADASTRAR FONTE*/}
 
@@ -237,33 +255,15 @@ export default function App() {
 
           <TextInput
             style={styles.input}
-
-            placeholder="Nome da fonte"
-
-            value={nomeFonte}
-
-            onChangeText={setNomeFonte}
-          />
-
-
-          <TextInput
-            style={styles.input}
-
             placeholder="Link da fonte"
-
             value={enderecoFonte}
-
             onChangeText={setEnderecoFonte}
-
             autoCapitalize="none"
-
             keyboardType="url"
           />
 
-
           <TouchableOpacity
             style={styles.botao}
-
             onPress={cadastrarFonte}
           >
 
@@ -275,7 +275,50 @@ export default function App() {
 
         </View>
 
+        {/*GERENCIAR FONTES*/}
 
+          <View style={styles.card}>
+
+          <Text style={styles.subtitulo}>
+            Gerenciar fontes
+          </Text>
+
+            {fontes.length === 0 ? (
+
+            <Text>
+              Nenhuma fonte cadastrada.
+            </Text>
+
+          ) : (
+
+            fontes.map(
+              (fonte) => (
+
+                <View 
+                key={fonte.id}
+                style={styles.linhaFonte}
+                >
+
+               <Text style={styles.nomeFonteGerenciar}>
+                 {fonte.titulo}
+               </Text>
+
+                <TouchableOpacity
+                  style={styles.botaoApagarFonte}
+                  onPress={() => apagarFonte(fonte.id)}
+                >
+
+                  <Text style={styles.textoBotaoApagarFonte}>
+                    Apagar
+                  </Text>
+                </TouchableOpacity>
+                </View>
+              )
+            )
+
+          )}
+
+        </View>  
 
         {/*FILTROS*/}
 
@@ -413,7 +456,7 @@ export default function App() {
 
                   style={
                     fonteSelecionada ===
-                    String(fonte.id)
+                    fonte.titulo
 
                       ? styles.filtroSelecionado
 
@@ -423,7 +466,7 @@ export default function App() {
                   onPress={() => {
 
                     setFonteSelecionada(
-                      String(fonte.id)
+                      fonte.titulo  
                     );
 
                     setCategoriaSelecionada('');
@@ -432,7 +475,7 @@ export default function App() {
                 >
 
                   <Text>
-                    {fonte.nome}
+                    {fonte.titulo}
                   </Text>
 
                 </TouchableOpacity>
@@ -497,23 +540,23 @@ export default function App() {
                   style={styles.categoriaNoticia}
                 >
 
-                  {noticia.categoria}
+                  {noticia.categorias}
 
                 </Text>
 
 
-                {/*FONTE*/}
+                {/*FONTE DE CADA NOTÍCIA*/}
 
                 <Text
                   style={styles.fonteNoticia}
                 >
 
-                  Fonte: {noticia.fonte_nome}
+                  Fonte: {noticia.fonte}
 
                 </Text>
 
 
-                {/*DESCRIÇÃO*/}
+                {/*DESCRIÇÃO DAS NOTÍCIAS*/}
 
                 <Text
                   style={styles.descricao}
@@ -524,18 +567,18 @@ export default function App() {
                 </Text>
 
 
-                {/*DATA*/}
+                {/*DATA DE PUBLICAÇÃO*/}
 
                 <Text
                   style={styles.data}
                 >
 
-                  {noticia.dataPublicacao}
+                  {noticia.dataDePublicacao}
 
                 </Text>
 
 
-                {/*LINK*/}
+                {/*LINK DAS FONTES E NOTÍCIAS*/}
 
                 <TouchableOpacity
 
@@ -543,7 +586,7 @@ export default function App() {
 
                   onPress={() =>
                     Linking.openURL(
-                      noticia.link
+                      noticia.endereco_noticia
                     )
                   }
 
@@ -555,7 +598,7 @@ export default function App() {
                     }
                   >
 
-                    Ler notícia completa
+                    Clique para ver a notícia completa
 
                   </Text>
 
@@ -601,7 +644,6 @@ const styles = StyleSheet.create({
 
   },
 
-
   //TÍTULOS
 
   titulo: {
@@ -610,6 +652,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     color: '#ffffff',
+   alignSelf: 'center',                  
 
   },
 
@@ -621,7 +664,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
 
   },
-
 
   //CARDS
 
@@ -774,7 +816,7 @@ const styles = StyleSheet.create({
 
   botaoNoticia: {
 
-    backgroundColor: '#8b0000',
+    backgroundColor: '#313131',
     padding: 10,
     borderRadius: 8,
     marginTop: 10,
@@ -789,5 +831,31 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
 
   },
+
+linhaFonte: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 8,
+
+},
+
+nomeFonteGerenciar: {
+  fontSize: 16,
+  flex: 1,
+},
+
+botaoApagarFonte: {
+  backgroundColor: '#313131',
+  paddingHorizontal: 12,
+  paddingVertical: 6,
+  borderRadius: 6,
+},
+
+textoBotaoApagarFonte: {
+  color: '#ffffff',
+  fontWeight: 'bold',
+  fontSize: 13,
+},
 
 });

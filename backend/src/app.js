@@ -68,7 +68,7 @@ function executar(sqlTexto, params = []) {
   return new Promise((resolve, reject) => {
     db.run(sqlTexto, params, function (erro) {
       if (erro) { reject(erro) }
-      else { resolve(this) } // { lastID, changes }
+      else { resolve(this) }
     })
   })
 }

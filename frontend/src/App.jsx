@@ -116,7 +116,7 @@ export default function App() {
   return (
     <View style={styles.principal}>
       <View style={styles.topo}>
-        <Text style={styles.titulo}>Mais Mais Notícias</Text>
+        <Text style={styles.titulo}>Odio Notícias</Text>
       </View>
 
       <ScrollView>
@@ -138,10 +138,7 @@ export default function App() {
           </View>
         </View>
 
-        <View style={styles.topoFiltros}>
-          <Pressable style={styles.botao} onPress={voltarTodasNoticias}>
-            <Text style={styles.texto}>Todas</Text>
-          </Pressable>
+      
 
           <Pressable
             style={[styles.botao, filtro === 'categoria' && styles.botaoSelecionado]}

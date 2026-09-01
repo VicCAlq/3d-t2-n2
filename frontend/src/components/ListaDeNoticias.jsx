@@ -21,7 +21,7 @@ if (buscandoDados) {
     <>
       {listaDeNoticias.map(
         (noticia) => (
-          <NoticiaCard key={noticia.id} noticia={noticia} />
+          <CardNoticia key={noticia.id} noticia={noticia} />
         )
       )}
     </>

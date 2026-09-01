@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 
-export default function FiltrosNoticias({
+export default function filtrarsNoticias({
   categorias,
   fontes,
   categoriaSelecionada,

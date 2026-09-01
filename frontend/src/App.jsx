@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
-import cadastrarFontes from './cadastrarFontes';
-import gerenciarFontes from './gerenciarFontes';
-import filtrarNoticias from './filtrarNoticias';
-import listaDeNoticias from './listaDeNoticias';
+import CadastrarFontes from './CadastrarFontes';
+import GerenciarFontes from './GerenciarFontes';
+import FiltrarNoticias from './FiltrarNoticias';
+import ListaDeNoticias from './ListaDeNoticias';
 
 
 const API_URL = 'http://localhost:3451';
@@ -27,7 +27,6 @@ export default function App() {
     } catch (erro) {
       console.error('Erro ao buscar fontes:', erro);
     }
-
   }
 
   async function carregarNoticias() {
@@ -126,7 +125,7 @@ export default function App() {
         <Text style={styles.titulo}>
           T3 Notícias
         </Text>
-        <CadastrarFonte
+        <CadastrarFontes
           linkDigitado={linkDigitado}
           setLinkDigitado={setLinkDigitado}
           onCadastrar={cadastrarFonte}
@@ -135,7 +134,7 @@ export default function App() {
           listaDeFontes={listaDeFontes}
           onApagar={apagarFonte}
         />
-        <FiltrosNoticias
+        <FiltrarNoticias
           categorias={categorias}
           listaDeFontes={listaDeFontes}
           filtroCategoria={filtroCategoria}
@@ -146,7 +145,7 @@ export default function App() {
         <Text style={styles.subtitulo}>
           Notícias
         </Text>
-        <ListaNoticias
+        <ListaDeNoticias
           listaDeNoticias={listaDeNoticias}
           buscandoDados={buscandoDados}
         />

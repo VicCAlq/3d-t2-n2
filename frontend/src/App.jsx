@@ -1,28 +1,28 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
-import CadastrarFonte from './CadastrarFonte';
-import GerenciarFontes from './GerenciarFontes';
-import FiltrosNoticias from './FiltrosNoticias';
-import ListaNoticias from './ListaNoticias';
+import cadastrarFontes from './cadastrarFontes';
+import gerenciarFontes from './gerenciarFontes';
+import filtrarNoticias from './filtrarNoticias';
+import listaDeNoticias from './listaDeNoticias';
 
 
 const API_URL = 'http://localhost:3451';
 
 export default function App() {
 
-  const [noticias, setNoticias] = useState([]);
-  const [fontes, setFontes] = useState([]);
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState('');
-  const [fonteSelecionada, setFonteSelecionada] = useState('');
-  const [enderecoFonte, setEnderecoFonte] = useState('');
-  const [carregando, setCarregando] = useState(false);
+  const [listaDeNoticias, setListaDeNoticias] = useState([]);
+  const [listaDeFontes, setListaDeFontes] = useState([]);
+  const [filtroCategoria, setFiltroCategoria] = useState('');
+  const [filtroFonte, setFiltroFonte] = useState('');
+  const [linkDigitado, setLinkDigitado] = useState('');
+  const [buscandoDados, setBuscandoDados] = useState(false);
 
   async function carregarFontes() {
     try {
       const resposta = await fetch(`${API_URL}/api/fontes/`);
       const dados = await resposta.json();
-      setFontes(dados.fontes);
+      setListaDeFontes(dados.fontes);
 
     } catch (erro) {
       console.error('Erro ao buscar fontes:', erro);
@@ -31,34 +31,34 @@ export default function App() {
   }
 
   async function carregarNoticias() {
-    setCarregando(true);
+    setBuscandoDados(true);
 
     try {
       let url = `${API_URL}/api/noticias`;
-      if (categoriaSelecionada) {
-        url = `${API_URL}/api/noticias/categoria/` + encodeURIComponent(categoriaSelecionada);
-      } else if (fonteSelecionada) {
-        url = `${API_URL}/api/noticias/fonte/` + encodeURIComponent(fonteSelecionada);
+      if (filtroCategoria) {
+        url = `${API_URL}/api/noticias/categoria/` + encodeURIComponent(filtroCategoria);
+      } else if (filtroFonte) {
+        url = `${API_URL}/api/noticias/fonte/` + encodeURIComponent(filtroFonte);
       }
       const resposta = await fetch(url);
       const dados = await resposta.json();
-      setNoticias(dados);
+      setListaDeNoticias(dados);
 
     } catch (erro) {
       console.error('Erro ao buscar notícias:', erro);
     } finally {
-      setCarregando(false);
+      setBuscandoDados(false);
     }
   }
 
   async function cadastrarFonte() {
-    if (!enderecoFonte) {
+    if (!linkDigitado) {
       alert('Preencha o link da fonte.');
       return;
     }
 
     try {
-      const query = new URLSearchParams({ link: enderecoFonte });
+      const query = new URLSearchParams({ link: linkDigitado });
       const resposta = await fetch(`${API_URL}/api/fontes/cadastrar?${query}`);
       const dados = await resposta.json();
       if (!resposta.ok) {
@@ -67,7 +67,7 @@ export default function App() {
       }
 
       alert('Fonte cadastrada com sucesso!');
-      setEnderecoFonte('');
+      setLinkDigitado('');
       await carregarFontes();
       await carregarNoticias();
 
@@ -77,23 +77,17 @@ export default function App() {
     }
   }
 
-
-  //DELETAR FONTES
-
   async function apagarFonte(id) {
 
     try {
-
       const resposta = await fetch(`${API_URL}/api/fontes/${id}`, { method: 'DELETE' });
       const dados = await resposta.json();
-
       if (!resposta.ok) {
         alert(dados.erro || 'Erro ao apagar fonte.');
         return;
       }
-
-      if (fonteSelecionada) {
-        setFonteSelecionada('');
+      if (filtroFonte) {
+        setFiltroFonte('');
       }
 
       await carregarFontes();
@@ -103,9 +97,7 @@ export default function App() {
       console.error('Erro ao apagar fonte:', erro);
       alert('Não foi possível conectar ao servidor.');
     }
-
   }
-
   useEffect(() => {
     carregarFontes();
     carregarNoticias();
@@ -113,7 +105,7 @@ export default function App() {
 
   useEffect(() => {
     carregarNoticias();
-  }, [categoriaSelecionada, fonteSelecionada]);
+  }, [filtroCategoria, filtroFonte]);
 
   const categorias = [
     'Esportes',
@@ -128,7 +120,6 @@ export default function App() {
 
 
   return (
-
     <ScrollView style={styles.tela}>
       <View style={styles.container}>
 
@@ -136,28 +127,28 @@ export default function App() {
           T3 Notícias
         </Text>
         <CadastrarFonte
-          enderecoFonte={enderecoFonte}
-          setEnderecoFonte={setEnderecoFonte}
+          linkDigitado={linkDigitado}
+          setLinkDigitado={setLinkDigitado}
           onCadastrar={cadastrarFonte}
         />
         <GerenciarFontes
-          fontes={fontes}
+          listaDeFontes={listaDeFontes}
           onApagar={apagarFonte}
         />
         <FiltrosNoticias
           categorias={categorias}
-          fontes={fontes}
-          categoriaSelecionada={categoriaSelecionada}
-          fonteSelecionada={fonteSelecionada}
-          setCategoriaSelecionada={setCategoriaSelecionada}
-          setFonteSelecionada={setFonteSelecionada}
+          listaDeFontes={listaDeFontes}
+          filtroCategoria={filtroCategoria}
+          filtroFonte={filtroFonte}
+          setFiltroCategoria={setFiltroCategoria}
+          setFiltroFonte={setFiltroFonte}
         />
         <Text style={styles.subtitulo}>
           Notícias
         </Text>
         <ListaNoticias
-          noticias={noticias}
-          carregando={carregando}
+          listaDeNoticias={listaDeNoticias}
+          buscandoDados={buscandoDados}
         />
       </View>
     </ScrollView>
@@ -165,7 +156,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-
   tela: {
     flex: 1,
     backgroundColor: '#050101a9',
@@ -190,5 +180,4 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: '#ffffff',
   },
-
 });

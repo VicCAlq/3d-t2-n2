@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 
-export default function CadastrarFonte({ enderecoFonte, setEnderecoFonte, onCadastrar }) {
+export default function cadastrarFontes({ enderecoFonte, setEnderecoFonte, onCadastrar }) {
 
   return (
     <View style={styles.card}>

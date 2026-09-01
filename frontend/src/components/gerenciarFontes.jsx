@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
-export default function GerenciarFontes({ fontes, onApagar }) {
+export default function gerenciarFontes({ fontes, onApagar }) {
 
   return (
     <View style={styles.card}>

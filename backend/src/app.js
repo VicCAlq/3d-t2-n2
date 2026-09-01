@@ -121,7 +121,7 @@ app.get('/api/noticias/categoria/:categoria', async (req, res) => {
   }
 })
 
-//filtra a tabela de notícias pela fonte
+//filtra a tabela de notícias ppor meio da fonte slaoq
 app.get('/api/noticias/fonte/:fonte', async (req, res) => {
   const fonte = req.params.fonte
 
@@ -138,7 +138,7 @@ app.get('/api/noticias/fonte/:fonte', async (req, res) => {
   }
 })
 
-//vai enviar a lista de fontes de notícias
+//vai enviar a lista de fontes de notícias p o coiso
 app.get('/api/fontes/', async (req, res) => {
   try {
     const fontes = await buscar(`SELECT * FROM ${TABELA_FONTES_NOME}`)
@@ -148,7 +148,7 @@ app.get('/api/fontes/', async (req, res) => {
   }
 })
 
-//envia lista de categorias de notícias
+//envia a lista de categorias de notícias p bg doido
 app.get('/api/categorias/', async (req, res) => {
   try {
     const linhas = await buscar(

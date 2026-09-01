@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
-import NoticiaCard from './cardNoticia';
+import CardNoticia from './CardNoticia';
 
-export default function listaDeNoticias({ noticias, carregando }) {
-
-  if (carregando) {
+export default function ListaDeNoticias({ listaDeNoticias, buscandoDados }) {
+  
+if (buscandoDados) {
     return <ActivityIndicator size="large" />;
   }
 
-  if (noticias.length === 0) {
+  if (listaDeNoticias.length === 0) {
     return (
       <View style={styles.card}>
         <Text>
@@ -19,7 +19,7 @@ export default function listaDeNoticias({ noticias, carregando }) {
 
   return (
     <>
-      {noticias.map(
+      {listaDeNoticias.map(
         (noticia) => (
           <NoticiaCard key={noticia.id} noticia={noticia} />
         )
@@ -29,12 +29,10 @@ export default function listaDeNoticias({ noticias, carregando }) {
 }
 
 const styles = StyleSheet.create({
-
   card: {
     backgroundColor: '#ffffff',
     padding: 15,
     borderRadius: 10,
     marginBottom: 20,
   },
-
 });
